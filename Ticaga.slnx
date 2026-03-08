@@ -1,0 +1,5 @@
+<Solution>
+  <Project Path="src/Ticaga.Api/Ticaga.Api.csproj" Id="9d70a8f4-aa91-4778-97ca-bf35f4d92988" />
+  <Project Path="src/Ticaga.Domain/Ticaga.Domain.csproj" Id="4b16e8fe-6ff8-4c4b-b985-7d658ea51712" />
+  <Project Path="src/Ticaga.Infrastructure/Ticaga.Infrastructure.csproj" Id="7262d003-0187-4852-828e-3246de32e4fb" />
+</Solution>
