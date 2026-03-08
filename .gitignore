@@ -416,3 +416,33 @@ FodyWeavers.xsd
 *.msix
 *.msm
 *.msp
+
+# Node / Frontend
+node_modules/
+dist/
+build/
+coverage/
+*.tsbuildinfo
+vite.svg
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+appsettings.Development.json
+secrets.json
+
+# Docker
+docker-compose.override.yml
+
+# Misc
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
