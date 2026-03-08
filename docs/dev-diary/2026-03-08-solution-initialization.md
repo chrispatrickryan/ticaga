@@ -1,5 +1,7 @@
 # March 8, 2026 – Initial Ticaga setup: Git Repo and VS Solution Creation
 
+## Git Repo
+
 1. Created Ticaga repository on GitHub.
 2. Edited README.md for Ticaga.
 3. Cloned ticaga repo locally.
