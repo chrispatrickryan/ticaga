@@ -1,7 +1,6 @@
-﻿namespace Ticaga.Domain.PlayingCards
+﻿namespace Ticaga.Domain.PlayingCards;
+
+public record PlayingCard(Rank Rank, Suit Suit)
 {
-    public record PlayingCard(Rank Rank, Suit Suit)
-    {
-        public override string ToString() => $"{Rank} of {Suit}";
-    }
+    public override string ToString() => $"{Rank} of {Suit}";
 }

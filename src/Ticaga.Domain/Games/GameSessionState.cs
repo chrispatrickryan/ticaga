@@ -1,10 +1,9 @@
-﻿namespace Ticaga.Domain.Games
+﻿namespace Ticaga.Domain.Games;
+
+public enum GameSessionState
 {
-    public enum GameSessionState
-    {
-        WaitingForPlayers,
-        InProgress,
-        Completed,
-        Cancelled
-    }
+    WaitingForPlayers,
+    InProgress,
+    Completed,
+    Cancelled
 }

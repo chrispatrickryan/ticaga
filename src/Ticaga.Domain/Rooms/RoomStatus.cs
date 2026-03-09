@@ -1,9 +1,8 @@
-﻿namespace Ticaga.Domain.Rooms
+﻿namespace Ticaga.Domain.Rooms;
+
+public enum RoomStatus
 {
-    public enum RoomStatus
-    {
-        Open,
-        InGame,
-        Closed
-    }
+    Open,
+    InGame,
+    Closed
 }

@@ -1,7 +1,13 @@
+using Microsoft.EntityFrameworkCore;
+using Ticaga.Infrastructure.Persistence;
+
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddDbContext<TicagaDbContext>(options =>
+    options.UseNpgsql(builder.Configuration.GetConnectionString("TicagaDatabase")));
 
 var app = builder.Build();
 

@@ -1,10 +1,9 @@
-﻿namespace Ticaga.Domain.PlayingCards
+﻿namespace Ticaga.Domain.PlayingCards;
+
+public enum Suit
 {
-    public enum Suit
-    {
-        Clubs,
-        Diamonds,
-        Hearts,
-        Spades
-    }
+    Clubs,
+    Diamonds,
+    Hearts,
+    Spades
 }

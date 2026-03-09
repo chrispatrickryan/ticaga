@@ -1,13 +1,12 @@
-﻿namespace Ticaga.Domain.Games
+﻿namespace Ticaga.Domain.Games;
+
+public enum GameType
 {
-    public enum GameType
-    {
-        //Euchre,
-        //Hearts,        
-        //Pitch,
-        //HighLowJack,
-        HighLowJack95,
-        //Spades,
-        //Whist,
-    }
+    //Euchre,
+    //Hearts,        
+    //Pitch,
+    //HighLowJack,
+    HighLowJack95,
+    //Spades,
+    //Whist,
 }
