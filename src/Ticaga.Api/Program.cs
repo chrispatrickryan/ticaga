@@ -7,7 +7,8 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<TicagaDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("TicagaDatabase")));
+    options.UseNpgsql(builder.Configuration.GetConnectionString("TicagaDatabase"))
+           .UseSnakeCaseNamingConvention());
 
 var app = builder.Build();
 

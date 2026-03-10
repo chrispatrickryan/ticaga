@@ -19,9 +19,7 @@ public sealed class RoomMemberConfiguration : IEntityTypeConfiguration<RoomMembe
             .IsRequired();
 
         builder.Property(x => x.UserId)
-            .HasColumnType("timestamp with time zone")
-            .IsRequired()
-            .HasDefaultValueSql("CURRENT_TIMESTAMP");
+            .IsRequired();
 
         builder.Property(x => x.JoinedUtc)
             .HasColumnType("timestamp with time zone")
