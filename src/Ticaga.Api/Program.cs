@@ -1,14 +1,10 @@
-using Microsoft.EntityFrameworkCore;
-using Ticaga.Infrastructure.Persistence;
+using Ticaga.Api.Endpoints;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-
-builder.Services.AddDbContext<TicagaDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("TicagaDatabase"))
-           .UseSnakeCaseNamingConvention());
+builder.Services.AddInfrastructure(builder.Configuration);
 
 var app = builder.Build();
 
@@ -29,5 +25,7 @@ app.MapGet("/health", () => Results.Ok(new
     service = "Ticaga.Api",
     utcTime = DateTime.UtcNow
 }));
+
+app.MapEndpoints();
 
 app.Run();
