@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Ticaga.Domain.Rooms;
+using Ticaga.Domain.Users;
 
 namespace Ticaga.Infrastructure.Persistence.Configurations.Rooms;
 
@@ -28,6 +29,14 @@ public sealed class RoomConfiguration : IEntityTypeConfiguration<Room>
             .HasColumnType("timestamp with time zone")
             .IsRequired()
             .HasDefaultValueSql("CURRENT_TIMESTAMP");
+
+        builder.Property(x => x.HostUserId)
+            .IsRequired();
+
+        builder.HasOne<User>()
+            .WithMany()
+            .HasForeignKey(x => x.HostUserId)
+            .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasMany<RoomMember>()
             .WithOne()

@@ -35,7 +35,7 @@ public class Room
             throw new ArgumentException("CreatedUtc must be specified as UTC.", nameof(createdUtc));
 
         Id = id;
-        Name = name;
+        Name = name.Trim();
         HostUserId = hostUserId;
         Status = status;
         CreatedUtc = createdUtc;

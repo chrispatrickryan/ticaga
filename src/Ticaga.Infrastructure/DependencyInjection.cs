@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Ticaga.Domain.Rooms;
 using Ticaga.Domain.Users;
 using Ticaga.Infrastructure.Persistence;
 using Ticaga.Infrastructure.Repositories;
@@ -18,7 +19,7 @@ public static class DependencyInjection
 
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();
-        
+        services.AddScoped<IRoomRepository, RoomRepository>();
 
         return services;
     }

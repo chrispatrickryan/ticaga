@@ -8,7 +8,7 @@ public static class UserEndpoints
     {
         var group = endpoints.MapGroup("/users").WithTags("Users");
 
-        endpoints.MapPost("/", CreateUserAsync)
+        group.MapPost("/", CreateUserAsync)
             .WithName("CreateUser")
             .WithSummary("Creates a new user.")
             .WithDescription("Creates a new user with a unique display name and saves it to the database.")
@@ -16,7 +16,7 @@ public static class UserEndpoints
             .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status409Conflict);
 
-        endpoints.MapGet("/{id:guid}", GetUserByIdAsync)
+        group.MapGet("/{id:guid}", GetUserByIdAsync)
             .WithName("GetUserById")
             .WithSummary("Retrieves a user by ID.")
             .WithDescription("Retrieves a user by their unique ID. Returns 404 if the user does not exist.")
