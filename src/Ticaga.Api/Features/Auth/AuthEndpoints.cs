@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Ticaga.Api.Features.Auth.Login;
 using Ticaga.Api.Features.Auth.Register;
 using Ticaga.Domain.Users;
 
@@ -18,6 +19,14 @@ public static class AuthEndpoints
             .Produces<RegisterUserResponse>(StatusCodes.Status201Created)
             .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status409Conflict);
+
+        group.MapPost("/login", LoginAsync)
+            .WithName("LoginUser")
+            .WithSummary("Logs in a user.")
+            .WithDescription("Authenticates a Ticaga user using email and password.")
+            .Produces<LoginUserResponse>(StatusCodes.Status200OK)
+            .ProducesValidationProblem(StatusCodes.Status400BadRequest)
+            .Produces(StatusCodes.Status401Unauthorized);
 
         return endpoints;
     }
@@ -80,5 +89,50 @@ public static class AuthEndpoints
             user.CreatedUtc);
 
         return Results.Created($"/users/{user.Id}", response);
+    }
+
+    private static async Task<IResult> LoginAsync(
+        LoginUserRequest request,
+        IUserRepository userRepository,
+        IPasswordHasher<User> passwordHasher,
+        CancellationToken cancellationToken)
+    {
+        var errors = LoginUserRequestValidator.Validate(request);
+
+        if (errors.Count > 0)
+        {
+            return Results.ValidationProblem(errors);
+        }
+
+        var canonicalEmail = User.CanonicalizeEmail(request.Email);
+
+        var user = await userRepository.GetByEmailAsync(canonicalEmail, cancellationToken);
+
+        if (user is null)
+        {
+            return Results.Json(
+                new { Message = "Invalid email or password." },
+                statusCode: StatusCodes.Status401Unauthorized);
+        }
+
+        var verificationResult = passwordHasher.VerifyHashedPassword(
+            user,
+            user.PasswordHash,
+            request.Password);
+
+        if (verificationResult == PasswordVerificationResult.Failed)
+        {
+            return Results.Json(
+                new { Message = "Invalid email or password." },
+                statusCode: StatusCodes.Status401Unauthorized);
+        }
+
+        var response = new LoginUserResponse(
+            user.Id,
+            user.Email,
+            user.DisplayName,
+            user.CreatedUtc);
+
+        return Results.Ok(response);
     }
 }
