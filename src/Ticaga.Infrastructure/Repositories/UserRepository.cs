@@ -13,27 +13,35 @@ public sealed class UserRepository : IUserRepository
         _dbContext = dbContext;
     }
 
-    public async Task<User> AddAsync(User user, 
-        CancellationToken cancellationToken = default)
+    public async Task<User> AddAsync(User user, CancellationToken cancellationToken = default)
     {
         _dbContext.Users.Add(user);
         await _dbContext.SaveChangesAsync(cancellationToken);
         return user;
     }
 
-    public async Task<User?> GetByIdAsync(Guid id, 
-        CancellationToken cancellationToken = default)
+    public async Task<User?> GetByIdAsync(Guid id, CancellationToken cancellationToken = default)
     {
         return await _dbContext.Users
             .AsNoTracking()
             .SingleOrDefaultAsync(u => u.Id == id, cancellationToken);
     }
 
-    public async Task<bool> ExistsByDisplayNameAsync(string username, 
-        CancellationToken cancellationToken = default)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken = default)
     {
+        var canonicalEmail = User.CanonicalizeEmail(email);
+
         return await _dbContext.Users
             .AsNoTracking()
-            .AnyAsync(u => u.DisplayName == username, cancellationToken);
+            .SingleOrDefaultAsync(u => u.Email == canonicalEmail, cancellationToken);
+    }
+
+    public async Task<bool> ExistsByDisplayNameAsync(string displayName, CancellationToken cancellationToken = default)
+    {
+        var normalized = User.NormalizeDisplayName(displayName);
+
+        return await _dbContext.Users
+            .AsNoTracking()
+            .AnyAsync(u => u.NormalizedDisplayName == normalized, cancellationToken);
     }
 }

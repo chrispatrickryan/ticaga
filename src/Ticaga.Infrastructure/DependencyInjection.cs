@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Ticaga.Domain.Rooms;
@@ -16,6 +17,8 @@ public static class DependencyInjection
         services.AddDbContext<TicagaDbContext>(options =>
             options.UseNpgsql(connectionString)
                    .UseSnakeCaseNamingConvention());
+
+        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();
