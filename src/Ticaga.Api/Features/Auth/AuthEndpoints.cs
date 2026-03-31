@@ -1,5 +1,7 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Ticaga.Api.Features.Auth.Jwt;
 using Ticaga.Api.Features.Auth.Login;
 using Ticaga.Api.Features.Auth.Register;
 using Ticaga.Domain.Users;
@@ -22,11 +24,19 @@ public static class AuthEndpoints
 
         group.MapPost("/login", LoginAsync)
             .WithName("LoginUser")
-            .WithSummary("Logs in a user.")
+            .WithSummary("Logs in a user and returns a JWT access token.")
             .WithDescription("Authenticates a Ticaga user using email and password.")
             .Produces<LoginUserResponse>(StatusCodes.Status200OK)
             .ProducesValidationProblem(StatusCodes.Status400BadRequest)
             .Produces(StatusCodes.Status401Unauthorized);
+
+        group.MapGet("/me", GetCurrentUserAsync)
+            .WithName("GetCurrentUser")
+            .WithSummary("Gets the currently authenticated user.")
+            .WithDescription("Returns the currently authenticated Ticaga user based on the JWT bearer token.")
+            .Produces<CurrentUserResponse>(StatusCodes.Status200OK)
+            .Produces(StatusCodes.Status401Unauthorized)
+            .RequireAuthorization();
 
         return endpoints;
     }
@@ -95,6 +105,7 @@ public static class AuthEndpoints
         LoginUserRequest request,
         IUserRepository userRepository,
         IPasswordHasher<User> passwordHasher,
+        IJwtTokenService jwtTokenService,
         CancellationToken cancellationToken)
     {
         var errors = LoginUserRequestValidator.Validate(request);
@@ -127,11 +138,39 @@ public static class AuthEndpoints
                 statusCode: StatusCodes.Status401Unauthorized);
         }
 
+        var tokenResult = jwtTokenService.GenerateToken(user);
+
         var response = new LoginUserResponse(
+            tokenResult.AccessToken,
+            tokenResult.ExpiresUtc,
             user.Id,
             user.Email,
-            user.DisplayName,
-            user.CreatedUtc);
+            user.DisplayName);
+
+        return Results.Ok(response);
+    }
+
+    private static async Task<IResult> GetCurrentUserAsync(
+        ClaimsPrincipal claimsPrincipal,
+        IUserRepository userRepository,
+        CancellationToken cancellationToken)
+    {
+        var userIdValue = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? claimsPrincipal.FindFirstValue("sub");
+
+        if (!Guid.TryParse(userIdValue, out var userId))
+        {
+            return Results.Unauthorized();
+        }
+
+        var user = await userRepository.GetByIdAsync(userId, cancellationToken);
+
+        if (user is null)
+        {
+            return Results.Unauthorized();
+        }
+
+        var response = new CurrentUserResponse(user.Id, user.Email, user.DisplayName, user.CreatedUtc);
 
         return Results.Ok(response);
     }
