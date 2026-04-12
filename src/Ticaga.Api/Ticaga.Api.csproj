@@ -18,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Ticaga.Domain\Ticaga.Domain.csproj" />
+    <ProjectReference Include="..\Ticaga.Application\Ticaga.Application.csproj" />
     <ProjectReference Include="..\Ticaga.Infrastructure\Ticaga.Infrastructure.csproj" />
   </ItemGroup>
 

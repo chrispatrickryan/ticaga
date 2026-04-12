@@ -1,11 +1,14 @@
-﻿using Microsoft.AspNetCore.Identity;
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Ticaga.Application.Abstractions.Security;
 using Ticaga.Domain.Rooms;
 using Ticaga.Domain.Users;
+using Ticaga.Infrastructure.Abstractions.Security;
 using Ticaga.Infrastructure.Persistence;
 using Ticaga.Infrastructure.Repositories;
+
+namespace Ticaga.Infrastructure;
 
 public static class DependencyInjection
 {
@@ -18,7 +21,7 @@ public static class DependencyInjection
             options.UseNpgsql(connectionString)
                    .UseSnakeCaseNamingConvention());
 
-        services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
+        services.AddScoped<IPasswordHasher, AspNetIdentityPasswordHasher>();
 
         // Repositories
         services.AddScoped<IUserRepository, UserRepository>();
