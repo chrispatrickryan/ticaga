@@ -1,4 +1,5 @@
-﻿using Ticaga.Api.Endpoints.Rooms.Dto;
+﻿using System.Security.Claims;
+using Ticaga.Api.Endpoints.Rooms.Dto;
 using Ticaga.Application.Common;
 using Ticaga.Application.Features.Rooms.CreateRoom;
 using Ticaga.Application.Features.Rooms.CreateRoom.Dto;
@@ -19,7 +20,8 @@ public static class RoomEndpoints
             .WithDescription("Creates a new room with a unique display name and saves it to the database.")
             .Produces<CreateRoomResult>(StatusCodes.Status201Created)
             .ProducesValidationProblem(StatusCodes.Status400BadRequest)
-            .Produces(StatusCodes.Status409Conflict);
+            .Produces(StatusCodes.Status409Conflict)
+            .RequireAuthorization();
 
         group.MapGet("/{id:guid}", GetRoomByIdAsync)
             .WithName("GetRoomById")
@@ -33,10 +35,19 @@ public static class RoomEndpoints
 
     private static async Task<IResult> CreateRoomAsync(
         CreateRoomRequest request,
+        ClaimsPrincipal claimsPrincipal,
         CreateRoomHandler handler,
         CancellationToken cancellationToken)
     {
-        var command = new CreateRoomCommand(request.Name, request.HostUserId);
+        var userIdValue = claimsPrincipal.FindFirstValue(ClaimTypes.NameIdentifier)
+            ?? claimsPrincipal.FindFirstValue("sub");
+
+        if (!Guid.TryParse(userIdValue, out var userId))
+        {
+            return Results.Unauthorized();
+        }
+
+        var command = new CreateRoomCommand(request.Name, userId);
         var result = await handler.HandleAsync(command, cancellationToken);
 
         if (!result.IsSuccess)
@@ -49,7 +60,7 @@ public static class RoomEndpoints
             };
         }
 
-        var response = new CreateRoomResponse(
+        var response = new RoomSummaryResponse(
             result.Value!.Id,
             result.Value.Name,
             result.Value.HostUserId,
@@ -75,13 +86,13 @@ public static class RoomEndpoints
             };
         }
 
-        var response = new CreateRoomResponse(
+        var response = new RoomSummaryResponse(
             result.Value!.Id,
             result.Value.Name,
             result.Value.HostUserId,
             result.Value.Status.ToString(),
             result.Value.CreatedUtc);
 
-        return Results.Ok(response);
+        return Results.Created($"/rooms/{result.Value.Id}", response);
     }
 }
